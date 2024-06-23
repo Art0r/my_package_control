@@ -4,6 +4,9 @@ from core import views
 
 router = routers.DefaultRouter()
 router.register('resident', views.ResidentViewSet)
+router.register('apartment', views.ApartmentViewSet)
+router.register('package', views.PackageViewSet)
+
 
 urlpatterns = [
     path('', include(router.urls)),
