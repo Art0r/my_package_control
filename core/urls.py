@@ -6,7 +6,7 @@ router = routers.DefaultRouter()
 router.register('resident', views.ResidentViewSet)
 router.register('apartment', views.ApartmentViewSet)
 router.register('package', views.PackageViewSet)
-
+router.register('validation', views.ValidateViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -35,7 +35,6 @@ class Package(Base):
     received = models.CharField(name="received", blank=True, null=True, max_length=128,
                                 editable=False)
     retrieved = models.CharField(name="retrieved", blank=True, null=True, editable=True, max_length=128)
-
     retrieved_check = models.BooleanField(name="retrieved_check", blank=False, null=False, editable=True, default=False)
 
     def save(self, *args, **kwargs):

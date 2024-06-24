@@ -25,7 +25,18 @@ class PackageRetrieveSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'retrieved', 'received', 'resident', 'retrieved_check', 'created_at', 'updated_at',)
 
 
-class PackageSerializer(serializers.HyperlinkedModelSerializer):
+class PackageCreateUpdateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Package
         fields = ('id', 'resident', 'retrieved_check', 'created_at', 'updated_at',)
+
+
+class ValidatePackageSerializer(serializers.Serializer):
+    email = serializers.CharField(max_length=128, write_only=True)
+    name = serializers.CharField(max_length=128, write_only=True)
+    apto = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        fields = ('email', 'name', 'apto')
+
+
