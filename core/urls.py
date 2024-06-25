@@ -6,9 +6,9 @@ router = routers.DefaultRouter()
 router.register('resident', views.ResidentViewSet)
 router.register('apartment', views.ApartmentViewSet)
 router.register('package', views.PackageViewSet)
-router.register('validation', views.ValidateViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('validpkg/<str:package_id>', views.validate_package)
 ]

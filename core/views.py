@@ -1,10 +1,10 @@
-from django.http import HttpRequest
-from rest_framework.exceptions import ValidationError
+from uuid import UUID
+from django.http import HttpRequest, JsonResponse
 from rest_framework.response import Response
 from core.models import Resident, Apartment, Package
 from core.serializers import ResidentSerializer, ApartmentSerializer, \
-    PackageCreateUpdateSerializer, PackageRetrieveSerializer, ValidatePackageSerializer
-from rest_framework import permissions, viewsets,generics
+    PackageCreateSerializer, PackageRetrieveSerializer, ValidatePackageSerializer, PackageUpdateSerializer
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 
 
@@ -26,8 +26,10 @@ class PackageViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
 
     def get_serializer_class(self):
-        if self.action in ('create', 'update',):
-            return PackageCreateUpdateSerializer
+        if self.action == 'update':
+            return PackageUpdateSerializer
+        if self.action == 'create':
+            return PackageCreateSerializer
         return PackageRetrieveSerializer
 
     @action(detail=False, methods=('get',), url_path="o")
@@ -38,8 +40,15 @@ class PackageViewSet(viewsets.ModelViewSet):
         return Response("Ola Mundo")
 
 
-class ValidateViewSet(generics.UpdateAPIView):
-    queryset = Package.objects.all()
-    serializer_class = ValidatePackageSerializer
-    permission_classes = (permissions.AllowAny,)
-    http_method_names = ('put',)
+def validate_package(request: HttpRequest, package_id: str):
+
+    try:
+        UUID(package_id)
+    except ValueError as e:
+        return JsonResponse({"res": f"error: {e.args[0]}"})
+
+    package = Package.objects.filter(id=package_id).first()
+
+    serialized_package = PackageRetrieveSerializer(package, read_only=True, context={'request': request})
+
+    return JsonResponse(serialized_package.data)

@@ -1,7 +1,5 @@
 import uuid
-
 from django.db import models
-from django.contrib.auth.hashers import make_password
 
 
 class Base(models.Model):
@@ -37,9 +35,5 @@ class Package(Base):
     retrieved = models.CharField(name="retrieved", blank=True, null=True, editable=True, max_length=128)
     retrieved_check = models.BooleanField(name="retrieved_check", blank=False, null=False, editable=True, default=False)
 
-    def save(self, *args, **kwargs):
-        text_to_hash = f"{self.resident.name} {self.resident.email} {self.resident.apto.number}"
-        self.received = make_password(text_to_hash)
-        super(Package, self).save(*args, **kwargs)
 
 
