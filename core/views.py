@@ -34,9 +34,6 @@ class PackageViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=('get',), url_path="o")
     def custom(self, request: HttpRequest):
-
-        self.serializer_class = ValidatePackageSerializer
-
         return Response("Ola Mundo")
 
 

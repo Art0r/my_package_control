@@ -27,12 +27,14 @@ class Command(BaseCommand):
 
             name = faker.name()
             email = faker.email()
+            phone = int(round(random.random(), 9) * (10 ** 9))
 
             resident = Resident()
 
             resident.name = name
             resident.email = email
             resident.apto = random_apto
+            resident.phone = phone
 
             resident.save()
             random_apto.save()

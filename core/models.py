@@ -15,15 +15,19 @@ class Apartment(Base):
     number = models.IntegerField(name="number", blank=False, null=False)
     floor = models.IntegerField(name="floor", blank=False, null=False)
 
+    def __str__(self) -> str:
+        return f"{self.number}"
+
 
 class Resident(Base):
     name = models.CharField(name="name", blank=False, null=False, max_length=64)
     email = models.EmailField(name="email", blank=False, null=False, max_length=64)
+    phone = models.CharField(name="phone", blank=False, null=False, max_length=11)
 
     apto = models.ForeignKey(to="Apartment", name="apto", related_name="resident",
                              blank=False, null=False, on_delete=models.CASCADE)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} - {self.apto.number}"
 
 
