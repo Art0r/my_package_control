@@ -39,5 +39,5 @@ class Package(Base):
     retrieved = models.CharField(name="retrieved", blank=True, null=True, editable=True, max_length=128)
     retrieved_check = models.BooleanField(name="retrieved_check", blank=False, null=False, editable=True, default=False)
 
-
-
+    def __str__(self) -> str:
+        return f"{self.id}"

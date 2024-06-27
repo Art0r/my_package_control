@@ -3,7 +3,7 @@ from django.http import HttpRequest, JsonResponse
 from rest_framework.response import Response
 from core.models import Resident, Apartment, Package
 from core.serializers import ResidentSerializer, ApartmentSerializer, \
-    PackageCreateSerializer, PackageRetrieveSerializer, ValidatePackageSerializer, PackageUpdateSerializer
+    PackageCreateSerializer, PackageRetrieveSerializer, PackageUpdateSerializer
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 
@@ -35,17 +35,3 @@ class PackageViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=('get',), url_path="o")
     def custom(self, request: HttpRequest):
         return Response("Ola Mundo")
-
-
-def validate_package(request: HttpRequest, package_id: str):
-
-    try:
-        UUID(package_id)
-    except ValueError as e:
-        return JsonResponse({"res": f"error: {e.args[0]}"})
-
-    package = Package.objects.filter(id=package_id).first()
-
-    serialized_package = PackageRetrieveSerializer(package, read_only=True, context={'request': request})
-
-    return JsonResponse(serialized_package.data)

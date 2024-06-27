@@ -5,25 +5,40 @@ from rest_framework import serializers
 from core.utils import get_package_hash
 
 
+class PackageRetrieveSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Package
+        fields = ('id', 'retrieved', 'received', 'retrieved_check', 'created_at', 'updated_at',)
+
+
+class ApartmentToResidentSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Apartment
+        fields = ('id', 'floor', 'number',)
+
+
 class ResidentSerializer(serializers.HyperlinkedModelSerializer):
+    package = PackageRetrieveSerializer(many=True, read_only=True)
+    apto = ApartmentToResidentSerializer(many=False, read_only=True)
 
     class Meta:
         model = Resident
-        fields = ('id', 'name', 'email', 'apto', 'phone', 'package', 'created_at', 'updated_at',)
+        fields = ('id', 'name', 'email', 'phone', 'apto', 'package', 'created_at', 'updated_at',)
+
+
+class ResidentToApartmentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Resident
+        fields = ('id', 'name', 'email', 'phone',)
 
 
 class ApartmentSerializer(serializers.HyperlinkedModelSerializer):
-    resident = ResidentSerializer(many=True, read_only=True)
+    resident = ResidentToApartmentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Apartment
         fields = ('id', 'floor', 'number', 'resident', 'created_at', 'updated_at',)
-
-
-class PackageRetrieveSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Package
-        fields = ('id', 'retrieved', 'received', 'resident', 'retrieved_check', 'created_at', 'updated_at',)
 
 
 class PackageUpdateSerializer(serializers.HyperlinkedModelSerializer):
@@ -34,7 +49,7 @@ class PackageUpdateSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Package
-        fields = ('id', 'updated_at', 'resident_email', 'resident_name', 'resident_apto', 'resident_phone')
+        fields = ('updated_at', 'resident_email', 'resident_name', 'resident_apto', 'resident_phone')
 
     def update(self, instance: Package, validated_data: Dict[str, Any]):
         resident_name = validated_data["resident_name"]
@@ -51,6 +66,7 @@ class PackageUpdateSerializer(serializers.HyperlinkedModelSerializer):
 
         if instance.received == retrieved_hash:
             instance.retrieved = retrieved_hash
+            instance.retrieved_check = True
             instance.save()
 
         return instance
@@ -59,7 +75,7 @@ class PackageUpdateSerializer(serializers.HyperlinkedModelSerializer):
 class PackageCreateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Package
-        fields = ('id', 'resident', 'created_at', 'updated_at',)
+        fields = ('resident', 'updated_at',)
 
     def create(self, validated_data: Dict[str, Any]):
         resident = validated_data["resident"]
@@ -75,14 +91,3 @@ class PackageCreateSerializer(serializers.HyperlinkedModelSerializer):
         resident.save()
         package.save()
         return resident
-
-
-class ValidatePackageSerializer(serializers.Serializer):
-    email = serializers.CharField(max_length=128, write_only=True)
-    name = serializers.CharField(max_length=128, write_only=True)
-    apto = serializers.IntegerField(write_only=True)
-
-    class Meta:
-        fields = ('email', 'name', 'apto', 'phone')
-
-

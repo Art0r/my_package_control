@@ -15,4 +15,4 @@ def get_package_hash(resident_name: str,
 
     text = f"{resident_name}/{resident_email}/{resident_phone}/{resident_apto}"
 
-    return make_password(text)
+    return make_password(text, salt="400000")
