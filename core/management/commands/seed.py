@@ -1,4 +1,6 @@
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 from core.models import Resident, Apartment
 from faker import Faker
 import random
@@ -9,6 +11,23 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         faker = Faker()
+
+        user = User(
+            email="art@art.com",
+            username="art",
+            password="art",
+            is_active=True,
+            # is_staff=True,
+            # is_superuser=True
+        )
+
+        user.save()
+
+        token = Token(user=user)
+
+        token.save()
+
+        self.stdout.write(self.style.SUCCESS(token.key))
 
         for i in range(5):
 
