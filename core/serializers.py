@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from core.models import Resident, Apartment, Package
+from core.models import Resident, Apartment, Package, Account
 from rest_framework import serializers
 from core.utils import get_package_hash
 
@@ -91,3 +91,18 @@ class PackageCreateSerializer(serializers.HyperlinkedModelSerializer):
         resident.save()
         package.save()
         return resident
+
+
+class ApartmentToCondoSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Apartment
+        fields = ('id', 'floor', 'number',)
+
+
+class CondoSerializer(serializers.HyperlinkedModelSerializer):
+    apto = ApartmentToCondoSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Account
+        fields = ('id', 'username', 'street', 'number', 'apto', 'created_at', 'updated_at')

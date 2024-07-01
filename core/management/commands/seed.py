@@ -1,33 +1,55 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from core.models import Resident, Apartment
+from core.models import Resident, Apartment, Account
 from faker import Faker
 import random
+import os
+import subprocess
 
 
 class Command(BaseCommand):
     help = "seed database"
 
+    @staticmethod
+    def delete_db():
+        if os.path.isfile("./db.sqlite3"):
+            os.remove("./db.sqlite3")
+
+    @staticmethod
+    def delete_migration():
+        if os.path.isfile("./core/migrations/0001_initial.py"):
+            os.remove("./core/migrations/0001_initial.py")
+
+    @staticmethod
+    def migrate():
+        subprocess.run(['python', 'manage.py', 'makemigrations'])
+        subprocess.run(['python', 'manage.py', 'migrate'])
+
     def handle(self, *args, **options):
+        self.delete_db()
+        self.delete_migration()
+        self.migrate()
+
         faker = Faker()
 
-        user = User(
+        condo = Account(
+            type=Account.Types.CONDO,
             email="art@art.com",
-            username="art",
-            password="art",
-            is_active=True,
-            # is_staff=True,
-            # is_superuser=True
+            password="123",
+            username="art"
         )
 
-        user.save()
+        condo.save()
 
-        token = Token(user=user)
+        condo_staff = Account(
+            type=Account.Types.CONDO_STAFF,
+            email="ar1t@art1.com",
+            password="123",
+            username="art1"
+        )
 
-        token.save()
-
-        self.stdout.write(self.style.SUCCESS(token.key))
+        condo_staff.save()
 
         for i in range(5):
 
@@ -38,6 +60,7 @@ class Command(BaseCommand):
             apto.number = number
             apto.floor = floor
 
+            apto.condo = condo
             apto.save()
 
         for i in range(10):
@@ -57,6 +80,3 @@ class Command(BaseCommand):
 
             resident.save()
             random_apto.save()
-
-
-

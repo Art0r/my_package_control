@@ -1,12 +1,18 @@
-from uuid import UUID
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 from rest_framework.response import Response
-from core.models import Resident, Apartment, Package
+from core.models import Resident, Apartment, Package, Account
 from core.serializers import ResidentSerializer, ApartmentSerializer, \
-    PackageCreateSerializer, PackageRetrieveSerializer, PackageUpdateSerializer
+    PackageCreateSerializer, PackageRetrieveSerializer, PackageUpdateSerializer, CondoSerializer
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.authentication import TokenAuthentication
+
+
+class CondoViewSet(viewsets.ModelViewSet):
+    queryset = Account.objects.filter(type=Account.Types.CONDO)
+    http_method_names = ('get', 'put', 'post', 'delete')
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = CondoSerializer
 
 
 class ResidentViewSet(viewsets.ModelViewSet):
