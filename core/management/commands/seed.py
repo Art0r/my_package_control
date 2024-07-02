@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
 from core.models import Resident, Apartment, Account
+from django.contrib.auth.hashers import make_password
 from faker import Faker
 import random
 import os
@@ -36,7 +35,7 @@ class Command(BaseCommand):
         condo = Account(
             type=Account.Types.CONDO,
             email="art@art.com",
-            password="123",
+            password=make_password("123"),
             username="art"
         )
 
@@ -45,7 +44,7 @@ class Command(BaseCommand):
         condo_staff = Account(
             type=Account.Types.CONDO_STAFF,
             email="ar1t@art1.com",
-            password="123",
+            password=make_password("123"),
             username="art1"
         )
 

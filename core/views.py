@@ -1,11 +1,15 @@
-from django.http import HttpRequest
+from django.http import HttpRequest, JsonResponse
 from rest_framework.response import Response
 from core.models import Resident, Apartment, Package, Account
 from core.serializers import ResidentSerializer, ApartmentSerializer, \
     PackageCreateSerializer, PackageRetrieveSerializer, PackageUpdateSerializer, CondoSerializer
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.views import APIView
+from rest_framework.request import Request
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import authenticate
 
 
 class CondoViewSet(viewsets.ModelViewSet):
@@ -46,3 +50,20 @@ class PackageViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=('get',), url_path="o")
     def custom(self, request: HttpRequest):
         return Response("Ola Mundo")
+
+
+class TokenHandling(APIView):
+    def post(self, request: Request, *args, **kwargs):
+
+        data = request.data
+        email = data.get('email')
+        password = data.get('password')
+
+        user = authenticate(request, username=email, password=password)
+
+        if user is None:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return JsonResponse({"res": token.key})
