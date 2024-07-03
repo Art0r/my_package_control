@@ -1,7 +1,6 @@
-from typing import Dict, Any
-
-from core.models import Resident, Apartment, Package, Account
+from core.models import Package
 from rest_framework import serializers
+from typing import Dict, Any
 from core.utils import get_package_hash
 
 
@@ -9,36 +8,6 @@ class PackageRetrieveSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Package
         fields = ('id', 'retrieved', 'received', 'retrieved_check', 'created_at', 'updated_at',)
-
-
-class ApartmentToResidentSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Apartment
-        fields = ('id', 'floor', 'number',)
-
-
-class ResidentSerializer(serializers.HyperlinkedModelSerializer):
-    package = PackageRetrieveSerializer(many=True, read_only=True)
-    apto = ApartmentToResidentSerializer(many=False, read_only=True)
-
-    class Meta:
-        model = Resident
-        fields = ('id', 'name', 'email', 'phone', 'apto', 'package', 'created_at', 'updated_at',)
-
-
-class ResidentToApartmentSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Resident
-        fields = ('id', 'name', 'email', 'phone',)
-
-
-class ApartmentSerializer(serializers.HyperlinkedModelSerializer):
-    resident = ResidentToApartmentSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Apartment
-        fields = ('id', 'floor', 'number', 'resident', 'created_at', 'updated_at',)
 
 
 class PackageUpdateSerializer(serializers.HyperlinkedModelSerializer):
@@ -91,18 +60,3 @@ class PackageCreateSerializer(serializers.HyperlinkedModelSerializer):
         resident.save()
         package.save()
         return resident
-
-
-class ApartmentToCondoSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Apartment
-        fields = ('id', 'floor', 'number',)
-
-
-class CondoSerializer(serializers.HyperlinkedModelSerializer):
-    apto = ApartmentToCondoSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Account
-        fields = ('id', 'username', 'street', 'number', 'apto', 'created_at', 'updated_at')
