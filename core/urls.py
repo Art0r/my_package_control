@@ -12,6 +12,7 @@ router.register('resident', views.ResidentViewSet)
 router.register('apartment', views.ApartmentViewSet)
 router.register('package', views.PackageViewSet)
 router.register('condo', views.CondoViewSet)
+router.register('account', views.AccountViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),

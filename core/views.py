@@ -1,21 +1,30 @@
 from rest_framework.request import Request
 from rest_framework.response import Response
-from core.models import Resident, Apartment, Package, Account
-from core.serializers.resident import ResidentSerializer
-from core.serializers.condo import CondoSerializer
-from core.serializers.apartment import ApartmentSerializer
-from core.serializers.package import PackageRetrieveSerializer, PackageUpdateSerializer, PackageCreateSerializer
+from core.models import (Resident, Apartment, Package, Account, Condo)
+from core.serializers import (CondoSerializer, AccountSerializer, ResidentSerializer,
+                              ApartmentSerializer, PackageUpdateSerializer, PackageRetrieveSerializer,
+                              PackageCreateSerializer)
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.decorators import action
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
 from core.permissions import IsCondo
 
 
-class CondoViewSet(ModelViewSet):
-    queryset = Account.objects.filter(type=Account.Types.CONDO)
+class AccountViewSet(GenericViewSet, RetrieveModelMixin,
+                     UpdateModelMixin, DestroyModelMixin):
+    queryset = Account.objects.all()
     http_method_names = ('get', 'put', 'post', 'delete')
-    permission_classes = (IsAuthenticated, IsCondo)
+    permission_classes = (IsAuthenticated,)
+    serializer_class = AccountSerializer
+
+
+class CondoViewSet(GenericViewSet, RetrieveModelMixin,
+                   UpdateModelMixin, DestroyModelMixin):
+    queryset = Condo.objects.all()
+    http_method_names = ('get', 'put', 'post', 'delete')
+    permission_classes = (IsAuthenticated,)
     serializer_class = CondoSerializer
 
 

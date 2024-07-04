@@ -13,4 +13,4 @@ access_token=$(echo "$json_response" | jq -r '.access')
 curl -X GET \
     -H 'Content-Type: application/json' \
     -H "Authorization: Bearer $access_token" \
-    http://localhost:8000/api/condo/
+    http://localhost:8000/api/account/1/

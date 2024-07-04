@@ -1,5 +1,8 @@
 from django.core.management.base import BaseCommand
-from core.models import Resident, Apartment, Account
+from core.models import (Resident,
+                         Account,
+                         Apartment,
+                         Condo)
 from django.contrib.auth.hashers import make_password
 from faker import Faker
 import random
@@ -32,50 +35,29 @@ class Command(BaseCommand):
 
         faker = Faker()
 
-        condo = Account(
-            type=Account.Types.CONDO,
+        condo = Condo.objects.create(number=77, street="Rua Coiso")
+
+        account = Account.objects.create(
             email="art@art.com",
             password=make_password("123"),
-            username="art"
+            username="art",
+            phone="1234123",
+            condo=condo
         )
-
-        condo.save()
-
-        condo_staff = Account(
-            type=Account.Types.CONDO_STAFF,
-            email="ar1t@art1.com",
-            password=make_password("123"),
-            username="art1"
-        )
-
-        condo_staff.save()
 
         for i in range(5):
-
-            apto = Apartment()
-            number = int(round(random.random(), 4) * (10 ** 4))
-            floor = int(round(random.random(), 1) * (10 ** 1))
-
-            apto.number = number
-            apto.floor = floor
-
-            apto.condo = condo
-            apto.save()
+            apto = Apartment.objects.create(
+                number=int(round(random.random(), 4) * (10 ** 4)),
+                floor=int(round(random.random(), 1) * (10 ** 1)),
+                condo=condo
+            )
 
         for i in range(10):
-
             random_apto = Apartment.objects.order_by('?').first()
 
-            name = faker.name()
-            email = faker.email()
-            phone = int(round(random.random(), 9) * (10 ** 9))
-
-            resident = Resident()
-
-            resident.name = name
-            resident.email = email
-            resident.apto = random_apto
-            resident.phone = phone
-
-            resident.save()
-            random_apto.save()
+            Resident.objects.create(
+                name=faker.name(),
+                email=faker.email(),
+                phone=int(round(random.random(), 9) * (10 ** 9)),
+                apto=random_apto  # Associate with a random apartment
+            )
